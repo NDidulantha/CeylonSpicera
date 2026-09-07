@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+
+/* ============================================================
+   CEYLON SPICERA — Design tokens (Tailwind v4 @theme)
+   Palette + type ported verbatim from the approved mockup.
+   Utilities generated: bg-cream, text-gold, font-display, etc.
+   ============================================================ */
+@theme {
+  /* Brand palette */
+  --color-cream: #f7f3ea; /* page background — warm parchment */
+  --color-panel: #fbf8f1; /* slightly lifted surface for cards */
+  --color-charcoal: #2c2c2c; /* primary body text */
+  --color-spice: #7a4a22; /* cinnamon-bark brown — links */
+  --color-gold: #c59a3d; /* accent / hover / eyebrows */
+  --color-forest: #1f3a2a; /* deep estate green */
+  --color-forest-700: #22331f; /* scrolled-header text tone */
+  --color-hairline: rgba(44, 44, 44, 0.08); /* dividers on cream */
+
+  /* Type roles — actual families injected by next/font as CSS vars */
+  --font-display: var(--font-cormorant), "Cormorant Garamond", serif;
+  --font-sans: var(--font-manrope), "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  /* Motion tokens reused across sections */
+  --ease-brand: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ---------- Base layer ---------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    background: var(--color-cream);
+    color: var(--color-charcoal);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a {
+    color: var(--color-spice);
+    text-decoration: none;
+    transition: color 0.3s var(--ease-brand);
+  }
+  a:hover {
+    color: var(--color-gold);
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-forest);
+  }
+}
+
+/* ---------- Shared keyframes (used from Phase 2 onward) ---------- */
+@keyframes cs-floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+@keyframes cs-floaty-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-24px);
+  }
+}
+@keyframes cs-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  70% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes cs-dash {
+  from {
+    stroke-dashoffset: 640;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Respect reduced-motion globally */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Hero slideshow — slow Ken Burns zoom + progress-bar fill */
+@keyframes cs-kenburns {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.11);
+  }
+}
+@keyframes cs-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Hero — slow Ken Burns zoom (single image, in/out) */
+@keyframes cs-ken {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1.17);
+  }
+}
+
+/* Scroll reveal (used by <Reveal>) */
+.cs-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+          opacity 0.7s var(--ease-brand),
+          transform 0.7s var(--ease-brand);
+}
+.cs-reveal-in {
+  opacity: 1;
+  transform: none;
+}
+/* Export map — routes draw in when the section reveals */
+.cs-route {
+  stroke-dasharray: 640;
+  stroke-dashoffset: 640;
+}
+.cs-reveal-in .cs-route {
+  animation-name: cs-dash;
+  animation-duration: 2.2s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
