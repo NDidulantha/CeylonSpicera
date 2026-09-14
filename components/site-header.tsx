@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { nav } from "@/lib/site-data";
@@ -73,6 +74,11 @@ export default function SiteHeader() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [langOpen, setLangOpen] = useState(false);
     const langRef = useRef<HTMLDivElement>(null);
+    const [searchOpen, setSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const searchRef = useRef<HTMLDivElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
+    const router = useRouter();
     const { cartCount, openCart, openWish, wishlist } = useStore();
     const { user } = useAuth();
 
@@ -96,6 +102,28 @@ export default function SiteHeader() {
             window.removeEventListener("mousedown", onClick);
         };
     }, [langOpen]);
+
+    useEffect(() => {
+        if (!searchOpen) return;
+        searchInputRef.current?.focus();
+        const onKey = (e: KeyboardEvent) => e.key === "Escape" && setSearchOpen(false);
+        const onClick = (e: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(e.target as Node)) setSearchOpen(false);
+        };
+        window.addEventListener("keydown", onKey);
+        window.addEventListener("mousedown", onClick);
+        return () => {
+            window.removeEventListener("keydown", onKey);
+            window.removeEventListener("mousedown", onClick);
+        };
+    }, [searchOpen]);
+
+    const submitSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        const q = searchQuery.trim();
+        router.push(q ? `/shop?q=${encodeURIComponent(q)}` : "/shop");
+        setSearchOpen(false);
+    };
 
     const iconLink =
         "flex items-center text-inherit opacity-90 transition-[opacity,color] duration-300 hover:opacity-100 hover:text-gold";
@@ -136,9 +164,35 @@ export default function SiteHeader() {
 
             {/* Utilities */}
             <div className="flex items-center gap-4 text-inherit">
-                <a href="#" title="Search" className={`${iconLink} hidden sm:flex`}>
-                    <IconSearch />
-                </a>
+                <div ref={searchRef} className="relative hidden sm:block">
+                    <button
+                        type="button"
+                        title="Search"
+                        aria-expanded={searchOpen}
+                        onClick={() => setSearchOpen((v) => !v)}
+                        className={iconLink}
+                    >
+                        <IconSearch />
+                    </button>
+                    {searchOpen && (
+                        <form
+                            onSubmit={submitSearch}
+                            className="absolute right-0 top-full mt-3 flex w-[240px] items-center gap-2 rounded-[25px] border border-hairline bg-cream px-3 py-2 text-forest-700 shadow-[0_20px_40px_rgba(31,58,42,0.15)]"
+                        >
+                            <span className="flex-none opacity-60">
+                                <IconSearch />
+                            </span>
+                            <input
+                                ref={searchInputRef}
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search the store"
+                                className="w-full bg-transparent font-sans text-[13.5px] font-light outline-none placeholder:text-[#A2977F]"
+                            />
+                        </form>
+                    )}
+                </div>
                 <div ref={langRef} className="relative hidden sm:block">
                     <button
                         type="button"

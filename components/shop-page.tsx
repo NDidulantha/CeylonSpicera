@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import ImageSlot from "@/components/image-slot";
 import { Stars, Heart } from "@/components/shop-ui";
 import { useStore } from "@/components/store-context";
@@ -11,11 +12,18 @@ const HAIR = "#D8C8AE";
 
 export default function ShopPage() {
     const { products: CATALOG, categories, priceMin, priceMax, loading } = useCatalog();
+    const searchParams = useSearchParams();
     const [view, setView] = useState<"grid" | "list">("grid");
     const [sort, setSort] = useState<SortKey>("featured");
-    const [query, setQuery] = useState("");
+    const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
     const [cat, setCat] = useState<string>("all");
     const [maxPrice, setMaxPrice] = useState(priceMax);
+
+    useEffect(() => {
+        const q = searchParams.get("q");
+        if (q !== null) setQuery(q);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     useEffect(() => {
         if (!loading) setMaxPrice(priceMax);

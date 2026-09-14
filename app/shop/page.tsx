@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import SiteHeader from "@/components/site-header";
 import Footer from "@/components/footer";
@@ -14,7 +15,9 @@ export default function Shop() {
         <>
             <SiteHeader />
             <main>
-                <ShopPage />
+                <Suspense fallback={null}>
+                    <ShopPage />
+                </Suspense>
             </main>
             <Footer />
         </>
