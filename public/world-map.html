@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#d8c39a;font-family:Georgia,'Times New Roman',serif}
+  #wrap{position:absolute;inset:0}
+  #map{width:100%;height:100%;display:block;cursor:grab}
+  #map.grabbing{cursor:grabbing}
+  .sphere{fill:url(#sea);stroke:#6b4f2a;stroke-width:1.5}
+  .graticule{fill:none;stroke:#7c6034;stroke-width:.4;opacity:.3}
+  .land{fill:#c2a878;stroke:#6b4f2a;stroke-width:.6}
+  .land.dest{fill:#b0894c}
+  .route{fill:none;stroke:#5a3a1c;stroke-width:1.4;opacity:.9;stroke-dasharray:2 5;stroke-linecap:round}
+  .dest-dot{fill:#5a3a1c}
+  .dest-ring{fill:none;stroke:#5a3a1c;stroke-width:1;opacity:.55}
+  .origin-dot{fill:#7c1f16}
+  .label{font-style:italic;font-size:11px;letter-spacing:.03em;fill:#4a2f14;paint-order:stroke;stroke:#e6d3a8;stroke-width:2.5px;stroke-linejoin:round}
+  .origin-label{font-style:normal;font-weight:700;font-size:12px;letter-spacing:.18em;fill:#7c1f16}
+  .hint{position:absolute;left:20px;bottom:16px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#5a3a1c;opacity:.75;pointer-events:none;display:flex;align-items:center;gap:8px}
+  .hint svg{opacity:.8}
+  .compass{position:absolute;right:18px;top:16px;opacity:.8;pointer-events:none}
+  @keyframes pulse{0%{r:5;opacity:.6}70%{r:16;opacity:0}100%{opacity:0}}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <svg id="map"></svg>
+  <svg class="compass" width="52" height="52" viewBox="0 0 52 52">
+    <circle cx="26" cy="26" r="24" fill="none" stroke="#5a3a1c" stroke-width="1" opacity=".7"/>
+    <path d="M26 4 L30 26 L26 24 Z" fill="#7c1f16"/><path d="M26 4 L22 26 L26 24 Z" fill="#5a3a1c"/>
+    <path d="M26 48 L30 26 L26 28 Z" fill="#5a3a1c" opacity=".7"/><path d="M26 48 L22 26 L26 28 Z" fill="#a9884f"/>
+    <text x="26" y="14" text-anchor="middle" font-family="Georgia" font-size="9" font-weight="700" fill="#5a3a1c">N</text>
+  </svg>
+  <div class="hint">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5a3a1c" stroke-width="1.6"><path d="M12 2v4M12 2a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/></svg>
+    Drag to spin the globe
+  </div>
+</div>
+<script>
+const SRI_LANKA = [80.77, 7.87];
+const destinations = [
+  { name: "United Kingdom", coord: [-1.5, 52.5] },
+  { name: "United States", coord: [-98, 39] },
+  { name: "Germany", coord: [10.4, 51.1] },
+  { name: "U.A.E.", coord: [54, 24] },
+  { name: "Japan", coord: [138, 37] },
+  { name: "Australia", coord: [134, -25] },
+  { name: "India", coord: [79, 22] },
+  { name: "Singapore", coord: [103.8, 1.35] },
+  { name: "Canada", coord: [-106, 56] },
+];
+const destSet = new Set(destinations.map(d => d.name));
+
+const svg = d3.select("#map");
+let W = 0, H = 0, projection, path, countries = [];
+let rotation = [-80.77, -12, 0];   // start centred on Ceylon
+let autoSpin = true;
+
+function setup(svg){
+  const d = svg.append("defs");
+  const sea = d.append("radialGradient").attr("id","sea").attr("cx","38%").attr("cy","34%").attr("r","78%");
+  sea.append("stop").attr("offset","0%").attr("stop-color","#ecdbb4");
+  sea.append("stop").attr("offset","55%").attr("stop-color","#dcc79a");
+  sea.append("stop").attr("offset","100%").attr("stop-color","#c3a06e");
+  const gr = d.append("filter").attr("id","grain");
+  gr.append("feTurbulence").attr("type","fractalNoise").attr("baseFrequency",".9").attr("numOctaves","2").attr("result","n");
+  gr.append("feColorMatrix").attr("in","n").attr("type","matrix").attr("values","0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .05 0");
+}
+
+function resize(){
+  const w = window.innerWidth, h = window.innerHeight;
+  W = w; H = h;
+  svg.attr("viewBox", `0 0 ${W} ${H}`);
+  const r = Math.min(W, H) / 2 - 18;
+  projection = d3.geoOrthographic().scale(r).translate([W/2, H/2]).rotate(rotation).clipAngle(90);
+  path = d3.geoPath(projection);
+  render();
+}
+
+let gSphere, gGrid, gLand, gRoutes, gMark, grainRect;
+function build(){
+  svg.selectAll("*").remove();
+  setup(svg);
+  gSphere = svg.append("path").attr("class","sphere");
+  gGrid = svg.append("path").attr("class","graticule");
+  gLand = svg.append("g");
+  gRoutes = svg.append("g");
+  gMark = svg.append("g");
+  grainRect = svg.append("rect").attr("fill","#fff").attr("filter","url(#grain)").attr("opacity",.5).attr("pointer-events","none");
+}
+
+function visible(coord){
+  const c = d3.geoDistance(coord, [-projection.rotate()[0], -projection.rotate()[1]]);
+  return c < Math.PI/2 - 0.02;
+}
+
+function render(){
+  if(!path) return;
+  gSphere.attr("d", path({type:"Sphere"}));
+  gGrid.attr("d", path(d3.geoGraticule10()));
+  grainRect.attr("width",W).attr("height",H);
+
+  gLand.selectAll("path").data(countries).join("path")
+    .attr("class", d => "land" + (destSet.has(d.properties.name) ? " dest" : ""))
+    .attr("d", path);
+
+  // routes
+  gRoutes.selectAll("path").data(destinations).join("path")
+    .attr("class","route")
+    .attr("d", d => path({type:"LineString", coordinates:[SRI_LANKA, d.coord]}));
+
+  // markers + labels (only front-facing)
+  const marks = [];
+  destinations.forEach(d => { if(visible(d.coord)) marks.push(d); });
+
+  const mg = gMark.selectAll("g.dest").data(marks, d=>d.name);
+  mg.exit().remove();
+  const en = mg.enter().append("g").attr("class","dest");
+  en.append("circle").attr("class","dest-ring").attr("r",5);
+  en.append("circle").attr("class","dest-dot").attr("r",2.4);
+  en.append("text").attr("class","label").attr("x",8).attr("y",3);
+  const all = en.merge(mg);
+  all.attr("transform", d => { const p = projection(d.coord); return `translate(${p[0]},${p[1]})`; });
+  all.select("text.label").text(d=>d.name);
+
+  // origin
+  gMark.selectAll("g.origin").remove();
+  if(visible(SRI_LANKA)){
+    const p = projection(SRI_LANKA);
+    const o = gMark.append("g").attr("class","origin").attr("transform",`translate(${p[0]},${p[1]})`);
+    o.append("circle").attr("r",5).attr("fill","none").attr("stroke","#7c1f16").attr("stroke-width",1.5).style("animation","pulse 2.4s ease-out infinite");
+    o.append("circle").attr("class","origin-dot").attr("r",4.5);
+    o.append("text").attr("class","origin-label").attr("x",0).attr("y",20).attr("text-anchor","middle").text("CEYLON");
+  }
+}
+
+d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json").then(topo => {
+  countries = topojson.feature(topo, topo.objects.countries).features;
+  build();
+  resize();
+});
+
+// drag to rotate
+const node = svg.node();
+let dragging = false, last = null;
+const sens = 0.25;
+function down(x,y){ dragging=true; autoSpin=false; last=[x,y]; node.classList.add("grabbing"); }
+function move(x,y){ if(!dragging) return; const dx=x-last[0], dy=y-last[1]; last=[x,y];
+  rotation[0]+=dx*sens; rotation[1]=Math.max(-90,Math.min(90, rotation[1]-dy*sens));
+  projection.rotate(rotation); render(); }
+function up(){ dragging=false; node.classList.remove("grabbing"); }
+node.addEventListener("mousedown", e=>down(e.clientX,e.clientY));
+window.addEventListener("mousemove", e=>move(e.clientX,e.clientY));
+window.addEventListener("mouseup", up);
+node.addEventListener("touchstart", e=>{const t=e.touches[0];down(t.clientX,t.clientY);}, {passive:true});
+node.addEventListener("touchmove", e=>{const t=e.touches[0];move(t.clientX,t.clientY);e.preventDefault();}, {passive:false});
+node.addEventListener("touchend", up);
+
+// gentle auto-spin until first interaction
+d3.timer(()=>{ if(autoSpin && projection){ rotation[0]+=0.12; projection.rotate(rotation); render(); } });
+
+let rt; window.addEventListener("resize", ()=>{ clearTimeout(rt); rt=setTimeout(resize,180); });
+</script>
+</body>
+</html>

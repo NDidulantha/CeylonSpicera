@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -v)",
+      "Bash(composer -V)",
+      "Bash(mysql --version)",
+      "PowerShell(composer *)",
+      "PowerShell(& \"C:\\\\Program Files\\\\MySQL\\\\MySQL Server 8.0\\\\bin\\\\mysql.exe\" -u root -e \"SELECT 1;\" 2>&1 | Out-String)",
+      "PowerShell(& \"C:\\\\Program Files\\\\MySQL\\\\MySQL Server 8.0\\\\bin\\\\mysql.exe\" -u root -pCeylondbpwd2026 -e \"CREATE DATABASE IF NOT EXISTS ceylon_spicera CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; SHOW DATABASES LIKE 'ceylon_spicera';\" 2>&1 | Out-String)",
+      "PowerShell(Get-Service *)",
+      "PowerShell($svc = Get-WmiObject Win32_Service -Filter \"Name='MySQL80'\"; $svc.PathName)",
+      "PowerShell($id = [Security.Principal.WindowsIdentity]::GetCurrent\\(\\); $p = New-Object Security.Principal.WindowsPrincipal\\($id\\); $p.IsInRole\\([Security.Principal.WindowsBuiltinRole]::Administrator\\))",
+      "Bash(/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe *)"
+    ]
+  }
+}
