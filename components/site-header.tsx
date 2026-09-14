@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { nav } from "@/lib/site-data";
 import {getNavHref} from "@/lib/site-data"
 import { useStore } from "@/components/store-context";
 import { useAuth } from "@/components/auth-context";
+import LanguageTranslator from "@/components/language-translator";
 
 
 /* ---- inline icons (refined set: 21px, stroke 1.5, round caps/joins) ---- */
@@ -70,6 +71,8 @@ const tagline = ["PURE", "HERITAGE", "·", "RICH", "FLAVOR"];
 export default function SiteHeader() {
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [langOpen, setLangOpen] = useState(false);
+    const langRef = useRef<HTMLDivElement>(null);
     const { cartCount, openCart, openWish, wishlist } = useStore();
     const { user } = useAuth();
 
@@ -79,6 +82,20 @@ export default function SiteHeader() {
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
+
+    useEffect(() => {
+        if (!langOpen) return;
+        const onKey = (e: KeyboardEvent) => e.key === "Escape" && setLangOpen(false);
+        const onClick = (e: MouseEvent) => {
+            if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
+        };
+        window.addEventListener("keydown", onKey);
+        window.addEventListener("mousedown", onClick);
+        return () => {
+            window.removeEventListener("keydown", onKey);
+            window.removeEventListener("mousedown", onClick);
+        };
+    }, [langOpen]);
 
     const iconLink =
         "flex items-center text-inherit opacity-90 transition-[opacity,color] duration-300 hover:opacity-100 hover:text-gold";
@@ -122,10 +139,28 @@ export default function SiteHeader() {
                 <a href="#" title="Search" className={`${iconLink} hidden sm:flex`}>
                     <IconSearch />
                 </a>
-                <a href="#" title="Language" className={`${iconLink} hidden sm:flex gap-1.5 text-[13px] tracking-[0.08em]`}>
-                    <IconGlobe />
-                    EN
-                </a>
+                <div ref={langRef} className="relative hidden sm:block">
+                    <button
+                        type="button"
+                        title="Language"
+                        aria-expanded={langOpen}
+                        onClick={() => setLangOpen((v) => !v)}
+                        className={`${iconLink} flex gap-1.5 text-[13px] tracking-[0.08em]`}
+                    >
+                        <IconGlobe />
+                        EN
+                    </button>
+                    {/* Kept mounted (just hidden) rather than conditionally rendered — Google's
+                        translate widget initialises once into this div and won't reappear
+                        if the div is removed and recreated. */}
+                    <div
+                        className="absolute right-0 top-full mt-3 min-w-[170px] rounded-[10px] border border-hairline bg-cream px-3 py-2.5 text-forest-700 shadow-[0_20px_40px_rgba(31,58,42,0.15)]"
+                        hidden={!langOpen}
+                    >
+                        <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] opacity-60">Translate page</div>
+                        <LanguageTranslator />
+                    </div>
+                </div>
                 <button type="button" onClick={openWish} title="Wishlist" className={`${iconLink} relative hidden sm:flex`}>
                     <IconHeart />
                     {wishlist.size > 0 && (

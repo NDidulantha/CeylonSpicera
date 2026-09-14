@@ -9,7 +9,6 @@ import WishlistDrawer from "@/components/wishlist-drawer";
 import { AuthProvider } from "@/components/auth-context";
 import { CatalogProvider } from "@/lib/catalog-context";
 import WhatsAppButton from "@/components/whatsapp-button";
-import LanguageTranslator from "@/components/language-translator";
 
 /* Display face — Cormorant Garamond, self-hosted (used with restraint) */
 const cormorant = localFont({
@@ -57,7 +56,6 @@ export default function RootLayout({
           <CartDrawer />
           <WishlistDrawer />
           <QuickView />
-          <LanguageTranslator />
           <WhatsAppButton />
         </StoreProvider>
         </CatalogProvider>
