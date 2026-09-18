@@ -1,8 +1,4 @@
-/*
-  Update WHATSAPP_NUMBER with the real business line before launch — this
-  placeholder won't open a real chat. Digits only, country code, no "+".
-*/
-const WHATSAPP_NUMBER = "94770000000";
+const WHATSAPP_NUMBER = "94720254466";
 const WHATSAPP_MESSAGE = "Hello Ceylon Spicera, I'd like to know more about your spices.";
 
 export default function WhatsAppButton() {

@@ -15,9 +15,8 @@ export const metadata: Metadata = {
 const HERO_IMG = "/contact/plantation.jpg";
 
 const details = [
-    { icon: "email", label: "Email", value: "trade@ceylonspicera.com", sub: "For orders & wholesale" },
-    { icon: "phone", label: "Phone", value: "+94 11 234 5678", sub: "Mon–Fri, 9am–6pm (GMT+5:30)" },
-    { icon: "flag", label: "Export Desk", value: "export@ceylonspicera.com", sub: "Documentation & shipping" },
+    { icon: "email", label: "Email", value: "Ceylonspicera@gmail.com", sub: "For orders & wholesale" },
+    { icon: "phone", label: "Phone / WhatsApp", value: "+94 72 025 4466", sub: "Mon–Fri, 9am–6pm (GMT+5:30)" },
     { icon: "pin", label: "Head Office", value: "Cinnamon Gardens, Colombo 07", sub: "Sri Lanka" },
 ];
 
