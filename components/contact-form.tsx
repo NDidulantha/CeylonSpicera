@@ -65,7 +65,7 @@ export default function ContactForm() {
                         </label>
                         <label className={labelCls}>
                             <span>Email</span>
-                            <input type="email" className={inputCls} placeholder="you@company.com" value={f.email} onChange={set("email")} />
+                            <input type="email" className={inputCls} placeholder="yourname@example.com" value={f.email} onChange={set("email")} />
                         </label>
                         <label className={labelCls}>
                             <span>Telephone <span className="font-normal normal-case tracking-normal text-[rgba(111,101,88,0.7)]">(WhatsApp)</span></span>
