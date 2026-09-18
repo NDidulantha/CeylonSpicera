@@ -152,7 +152,10 @@ class OrderController extends Controller
     private function nextReference(): string
     {
         $year = now()->year;
-        $count = Order::query()->whereYear('created_at', $year)->lockForUpdate()->count();
+        // A bare COUNT(*) ... FOR UPDATE is rejected by Postgres ("FOR UPDATE
+        // is not allowed with aggregate functions"), so lock the id column
+        // and count the results in PHP instead — portable across both.
+        $count = Order::query()->whereYear('created_at', $year)->lockForUpdate()->pluck('id')->count();
 
         return sprintf('CS-%d-%04d', $year, $count + 1);
     }

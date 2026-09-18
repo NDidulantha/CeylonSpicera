@@ -20,9 +20,12 @@ class ProductController extends Controller
             ->where('is_active', true);
 
         if ($search = $request->string('search')->trim()->value()) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('short_description', 'like', "%{$search}%");
+            // LOWER()+LIKE (rather than a bare `like`) keeps this
+            // case-insensitive on Postgres too, not just MySQL's default collation.
+            $term = '%'.mb_strtolower($search).'%';
+            $query->where(function ($q) use ($term) {
+                $q->whereRaw('LOWER(name) LIKE ?', [$term])
+                    ->orWhereRaw('LOWER(short_description) LIKE ?', [$term]);
             });
         }
 

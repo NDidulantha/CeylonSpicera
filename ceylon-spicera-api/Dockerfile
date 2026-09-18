@@ -1,8 +1,8 @@
 FROM php:8.4-cli-alpine
 
 RUN apk add --no-cache \
-        git unzip libpng-dev libzip-dev icu-dev oniguruma-dev \
-    && docker-php-ext-install pdo_mysql mbstring bcmath gd zip intl \
+        git unzip libpng-dev libzip-dev icu-dev oniguruma-dev postgresql-dev \
+    && docker-php-ext-install pdo_pgsql mbstring bcmath gd zip intl \
     && rm -rf /var/cache/apk/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
