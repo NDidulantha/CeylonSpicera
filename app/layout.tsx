@@ -46,7 +46,6 @@ export const metadata: Metadata = {
     template: "%s",
   },
   description: SITE_DESCRIPTION,
-  icons: { icon: "/logo/CS.png" },
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
