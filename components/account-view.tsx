@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/components/auth-context";
 import { COUNTRIES } from "@/lib/countries";
+import { API_URL } from "@/lib/api";
 
 const PAPER = "#F3EDDF";
 const INK = "#2b2317";
@@ -73,6 +74,18 @@ export default function AccountView() {
         setToday(`${d.getDate()} ${d.toLocaleString("en", { month: "short" }).toUpperCase()} ${d.getFullYear()}`);
     }, []);
 
+    useEffect(() => {
+        const socialError = params.get("social_error");
+        if (!socialError) return;
+        setError(
+            socialError === "no_email"
+                ? "That account didn't share an email address with us, so we couldn't sign you in. Please try another method."
+                : "Something went wrong signing you in. Please try again."
+        );
+        router.replace("/account");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [params]);
+
     const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value });
 
     const rules = useMemo(() => pwRules(f.pw, f.name, f.email), [f.pw, f.name, f.email]);
@@ -109,7 +122,10 @@ export default function AccountView() {
         }
     };
 
-    const socialNote = () => setNotice("Social sign-in connects with the backend — coming soon.");
+    const socialLogin = (provider: "google" | "facebook") => {
+        window.location.href = `${API_URL}/auth/${provider}/redirect?return_to=${encodeURIComponent(returnTo)}`;
+    };
+    const appleComingSoon = () => setNotice("Sign in with Apple isn't set up yet.");
 
     return (
         <Sheet bg={ACCOUNT_BG}>
@@ -256,8 +272,12 @@ export default function AccountView() {
                         <span className="h-px flex-1" style={{ background: HAIR }} />
                     </div>
                     <div className="mt-4 grid grid-cols-3 gap-2.5">
-                        {[{ n: "Google", i: <Google /> }, { n: "Apple", i: <Apple /> }, { n: "Facebook", i: <Facebook /> }].map((s) => (
-                            <button key={s.n} type="button" onClick={socialNote} className="flex items-center justify-center gap-2 rounded-[25px] border py-3 font-sans text-[12px] transition-colors" style={{ borderColor: "#C9B896", color: "#5C3724" }}>
+                        {[
+                            { n: "Google", i: <Google />, onClick: () => socialLogin("google") },
+                            { n: "Apple", i: <Apple />, onClick: appleComingSoon },
+                            { n: "Facebook", i: <Facebook />, onClick: () => socialLogin("facebook") },
+                        ].map((s) => (
+                            <button key={s.n} type="button" onClick={s.onClick} className="flex items-center justify-center gap-2 rounded-[25px] border py-3 font-sans text-[12px] transition-colors" style={{ borderColor: "#C9B896", color: "#5C3724" }}>
                                 {s.i}<span className="hidden sm:inline">{s.n}</span>
                             </button>
                         ))}
