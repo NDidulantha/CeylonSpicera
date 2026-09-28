@@ -215,7 +215,7 @@ export default function SiteHeader() {
                         <LanguageTranslator />
                     </div>
                 </div>
-                <button type="button" onClick={openWish} title="Wishlist" className={`${iconLink} relative hidden sm:flex`}>
+                <button type="button" onClick={openWish} title="Wishlist" className={`${iconLink} relative flex`}>
                     <IconHeart />
                     {wishlist.size > 0 && (
                         <span className="absolute -top-2 -right-2.5 flex h-[15px] min-w-[15px] items-center justify-center rounded-full bg-gold px-[3px] text-[9px] font-medium text-forest">
@@ -260,17 +260,38 @@ export default function SiteHeader() {
             {/* Mobile menu panel */}
             {menuOpen && (
                 <div className="absolute left-0 right-0 top-full lg:hidden border-t border-hairline bg-cream/97 backdrop-blur-md shadow-[0_20px_40px_rgba(31,58,42,0.1)]">
+                    <form
+                        onSubmit={(e) => { submitSearch(e); setMenuOpen(false); }}
+                        className="mx-6 mt-4 flex items-center gap-2 rounded-[25px] border border-hairline bg-cream px-4 py-2.5"
+                    >
+                        <span className="flex-none opacity-60"><IconSearch /></span>
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search the store"
+                            className="w-full bg-transparent font-sans text-[13.5px] font-light text-forest-700 outline-none placeholder:text-[#A2977F]"
+                        />
+                    </form>
+
                     <nav className="flex flex-col px-6 py-3 font-sans text-[14px] tracking-[0.04em] text-forest-700">
                         {nav.map((link) => (
                             <a
                                 key={link}
                                 href={getNavHref(link)}
                                 onClick={() => setMenuOpen(false)}
-                                className="border-b border-hairline py-3 last:border-0 transition-colors hover:text-gold"
+                                className="border-b border-hairline py-3 transition-colors hover:text-gold"
                             >
                                 {link}
                             </a>
                         ))}
+                        <Link
+                            href="/account"
+                            onClick={() => setMenuOpen(false)}
+                            className="border-b border-hairline py-3 last:border-0 transition-colors hover:text-gold"
+                        >
+                            {user ? user.name : "Account"}
+                        </Link>
                         <a href="#shop" onClick={() => setMenuOpen(false)} className="mt-3 mb-2 rounded-[25px] bg-gold px-6 py-3 text-center text-[12px] font-medium uppercase tracking-[0.14em] text-forest">
                             Shop Now
                         </a>

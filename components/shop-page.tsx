@@ -18,6 +18,7 @@ export default function ShopPage() {
     const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
     const [cat, setCat] = useState<string>("all");
     const [maxPrice, setMaxPrice] = useState(priceMax);
+    const [filtersOpen, setFiltersOpen] = useState(false);
 
     useEffect(() => {
         const q = searchParams.get("q");
@@ -92,9 +93,29 @@ export default function ShopPage() {
             </section>
 
             {/* Body */}
-            <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-11 px-6 pb-24 pt-14 lg:grid-cols-[250px_1fr] lg:px-11">
+            <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-6 px-6 pb-24 pt-8 lg:gap-11 lg:pt-14 lg:grid-cols-[250px_1fr] lg:px-11">
+                {/* Mobile filter toggle */}
+                <button
+                    type="button"
+                    onClick={() => setFiltersOpen((v) => !v)}
+                    aria-expanded={filtersOpen}
+                    className="flex items-center justify-between rounded-[10px] border px-4 py-3 font-sans text-[13px] font-medium text-forest lg:hidden"
+                    style={{ borderColor: HAIR, background: "#F7F1E7" }}
+                >
+                    <span className="flex items-center gap-2">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round">
+                            <line x1="4" y1="6" x2="20" y2="6" /><circle cx="9" cy="6" r="2" fill="#F7F1E7" />
+                            <line x1="4" y1="12" x2="20" y2="12" /><circle cx="15" cy="12" r="2" fill="#F7F1E7" />
+                            <line x1="4" y1="18" x2="20" y2="18" /><circle cx="11" cy="18" r="2" fill="#F7F1E7" />
+                        </svg>
+                        Filters
+                        {anyFilter && <span className="h-[6px] w-[6px] rounded-full bg-gold" />}
+                    </span>
+                    <span className="text-[16px] leading-none">{filtersOpen ? "−" : "+"}</span>
+                </button>
+
                 {/* Sidebar */}
-                <aside className="flex flex-col gap-9 lg:sticky lg:top-[100px] lg:self-start">
+                <aside className={`${filtersOpen ? "flex" : "hidden"} flex-col gap-9 lg:flex lg:sticky lg:top-[100px] lg:self-start`}>
                     <div className="relative">
                         <svg className="pointer-events-none absolute left-[14px] top-1/2 -translate-y-1/2" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8A7C68" strokeWidth={1.6}>
                             <circle cx="10.5" cy="10.5" r="6.5" />
