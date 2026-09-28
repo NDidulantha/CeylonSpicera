@@ -1,5 +1,8 @@
 <?php
 
+use App\Mail\ContactMessageReceived;
+use Illuminate\Support\Facades\Mail;
+
 function contactMessagePayload(array $overrides = []): array
 {
     return array_merge([
@@ -13,7 +16,9 @@ function contactMessagePayload(array $overrides = []): array
     ], $overrides);
 }
 
-test('stores a contact message', function () {
+test('stores a contact message and notifies the business inbox', function () {
+    Mail::fake();
+
     $response = $this->postJson('/api/contact', contactMessagePayload());
 
     $response->assertCreated();
@@ -22,6 +27,12 @@ test('stores a contact message', function () {
         'email' => 'jane@example.com',
         'inquiry_type' => 'Wholesale & Bulk Order',
     ]);
+
+    Mail::assertQueued(ContactMessageReceived::class, function (ContactMessageReceived $mail) {
+        return $mail->contactMessage->email === 'jane@example.com'
+            && $mail->hasTo(config('mail.from.address'))
+            && $mail->envelope()->replyTo[0]->address === 'jane@example.com';
+    });
 });
 
 test('rejects an invalid inquiry type', function () {
@@ -37,6 +48,8 @@ test('requires a message', function () {
 });
 
 test('silently accepts but does not store a honeypot submission', function () {
+    Mail::fake();
+
     $response = $this->postJson('/api/contact', contactMessagePayload([
         'email' => 'bot@example.com',
         'website' => 'https://spam.example.com',
@@ -45,6 +58,7 @@ test('silently accepts but does not store a honeypot submission', function () {
     $response->assertCreated();
 
     $this->assertDatabaseMissing('contact_messages', ['email' => 'bot@example.com']);
+    Mail::assertNothingQueued();
 });
 
 test('is rate limited', function () {
