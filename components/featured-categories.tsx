@@ -17,7 +17,7 @@ const CATEGORY_IMG: Record<string, string> = {
 
 export default function FeaturedCategories() {
     return (
-        <section id="categories" className="mx-auto max-w-[1280px] px-6 py-[118px] lg:px-11">
+        <section id="categories" className="mx-auto max-w-[1280px] px-6 py-16 sm:py-20 lg:px-11 lg:py-[118px]">
             <Reveal className="mb-14 text-center">
         <span className="text-[11px] uppercase tracking-[0.42em] text-gold">
           The Collection
@@ -27,14 +27,14 @@ export default function FeaturedCategories() {
                 </h2>
             </Reveal>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
                 {categories.map((c) => {
                     const img = CATEGORY_IMG[c.name];
                     return (
                         <Reveal key={c.name} delay={c.delay}>
                         <a
                             href="#shop"
-                            className="group relative flex h-[340px] flex-col justify-end overflow-hidden rounded-[6px] border border-[rgba(44,44,44,0.07)] transform-gpu transition-[translate,box-shadow] duration-500 ease-brand hover:-translate-y-2 hover:shadow-[0_30px_60px_-30px_rgba(31,58,42,0.45)]"
+                            className="group relative flex h-[180px] flex-col justify-end overflow-hidden rounded-[6px] border border-[rgba(44,44,44,0.07)] transform-gpu transition-[translate,box-shadow] duration-500 ease-brand hover:-translate-y-2 hover:shadow-[0_30px_60px_-30px_rgba(31,58,42,0.45)] sm:h-[260px] lg:h-[340px]"
                             style={{
                             backgroundColor: "#e6ddca",
                             backgroundImage:
@@ -46,7 +46,7 @@ export default function FeaturedCategories() {
                                     src={img}
                                     alt={c.name}
                                     fill
-                                    sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
+                                    sizes="(max-width:640px) 50vw, (max-width:1024px) 50vw, 33vw"
                                     className="object-cover transition-transform duration-700 ease-brand group-hover:scale-[1.06]"
                                 />
                             ) : (
@@ -55,15 +55,15 @@ export default function FeaturedCategories() {
                   </span>
                             )}
                             <div
-                                className="relative px-[22px] py-6 text-cream"
+                                className="relative px-3 py-3 text-cream sm:px-[22px] sm:py-6"
                                 style={{ background: "linear-gradient(transparent,rgba(22,40,29,.86) 55%)" }}
                             >
-                                <div className="mb-1.5 text-[11px] uppercase tracking-[0.14em] text-gold">
+                                <div className="mb-1 text-[9px] uppercase tracking-[0.1em] text-gold sm:mb-1.5 sm:text-[11px] sm:tracking-[0.14em]">
                                     {c.tag}
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="font-display text-[28px] font-medium">{c.name}</span>
-                                    <span className="text-[20px] text-gold transition-transform duration-300 group-hover:translate-x-1">
+                                    <span className="font-display text-[16px] font-medium sm:text-[28px]">{c.name}</span>
+                                    <span className="text-[14px] text-gold transition-transform duration-300 group-hover:translate-x-1 sm:text-[20px]">
                       →
                     </span>
                                 </div>

@@ -182,7 +182,7 @@ export default function ShopPage() {
                             <button type="button" onClick={clearAll} className="mt-4 rounded-[25px] bg-forest px-7 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-cream transition-colors hover:bg-[#2b4d38]">Clear filters</button>
                         </div>
                     ) : view === "grid" ? (
-                        <div className="mt-7 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="mt-7 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
                             {list.map((p) => (
                                 <ProductCard key={p.id} p={p} wished={wished(p.id)} beat={wishBeatId === p.id} onWish={() => toggleWish(p.id)} onQuick={() => openQuick(p.id)} onAdd={() => add(p.id)} />
                             ))}
@@ -213,31 +213,31 @@ function ProductCard({ p, wished, beat, onWish, onQuick, onAdd }: { p: Product; 
     const out = p.stock === "out";
     return (
         <div className="group relative flex flex-col bg-white transition-[translate,box-shadow,border-color] duration-[450ms] ease-[cubic-bezier(.16,.84,.34,1)] hover:-translate-y-1.5 hover:shadow-[0_30px_56px_-34px_rgba(31,58,42,.55)]" style={{ border: "1px solid #EFE8D8" }}>
-            <div className="relative h-[236px] overflow-hidden">
+            <div className="relative h-[150px] overflow-hidden sm:h-[190px] lg:h-[236px]" role="button" tabIndex={0} onClick={onQuick} onKeyDown={(e) => e.key === "Enter" && onQuick()} aria-label={`Quick view ${p.name}`}>
                 <div className="absolute inset-0 transition-[scale] duration-[900ms] ease-[cubic-bezier(.16,.84,.34,1)] group-hover:scale-[1.07]">
                     <ImageSlot alt={p.name} label={`Photo · ${p.name}`} />
                 </div>
-                {p.badge && (<span className="absolute left-[14px] top-[14px] rounded-[25px] bg-forest px-3 py-1 text-[9.5px] font-semibold uppercase tracking-[0.16em] text-cream">{p.badge}</span>)}
-                <button type="button" onClick={onWish} aria-label="Save" className="absolute right-3 top-3 flex h-[34px] w-[34px] items-center justify-center rounded-full border" style={{ background: "rgba(247,243,234,.9)", borderColor: HAIR }}>
+                {p.badge && (<span className="absolute left-2 top-2 rounded-[25px] bg-forest px-2 py-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-cream sm:left-[14px] sm:top-[14px] sm:px-3 sm:py-1 sm:text-[9.5px] sm:tracking-[0.16em]">{p.badge}</span>)}
+                <button type="button" onClick={(e) => { e.stopPropagation(); onWish(); }} aria-label="Save" className="absolute right-2 top-2 flex h-[26px] w-[26px] items-center justify-center rounded-full border sm:right-3 sm:top-3 sm:h-[34px] sm:w-[34px]" style={{ background: "rgba(247,243,234,.9)", borderColor: HAIR }}>
                     <Heart filled={wished} beat={beat} />
                 </button>
-                <div className="pointer-events-none absolute inset-x-4 bottom-4 translate-y-3 opacity-0 transition-[opacity,translate] duration-[350ms] group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
-                    <button type="button" onClick={onQuick} className="w-full rounded-[25px] border py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-forest" style={{ background: "#F7F3EA", borderColor: HAIR }}>Quick View</button>
+                <div className="pointer-events-none absolute inset-x-4 bottom-4 hidden translate-y-3 opacity-0 transition-[opacity,translate] duration-[350ms] group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 lg:block">
+                    <button type="button" onClick={(e) => { e.stopPropagation(); onQuick(); }} className="w-full rounded-[25px] border py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-forest" style={{ background: "#F7F3EA", borderColor: HAIR }}>Quick View</button>
                 </div>
             </div>
-            <div className="flex flex-1 flex-col px-5 pb-[22px] pt-5">
+            <div className="flex flex-1 flex-col px-2.5 pb-3 pt-2.5 sm:px-5 sm:pb-[22px] sm:pt-5">
                 <div className="flex items-center justify-between">
-                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-gold">{p.cat}</span>
+                    <span className="text-[8.5px] font-semibold uppercase tracking-[0.1em] text-gold sm:text-[10.5px] sm:tracking-[0.2em]">{p.cat}</span>
                     <Stars r={p.rating} />
                 </div>
-                <h3 className="mt-[9px] font-display text-[22px] font-semibold leading-[1.15] text-forest">{p.name}</h3>
-                <p className="mt-[7px] min-h-[38px] text-[12.5px] font-light leading-[1.45] text-[#8A7C68]">{p.desc}</p>
-                <div className="mt-[14px] flex items-center justify-between border-t pt-[14px]" style={{ borderColor: "#EFE8D8" }}>
-                    <span className="font-display text-[23px] font-semibold text-forest">{money(p.price)}</span>
+                <h3 className="mt-1 font-display text-[14px] font-semibold leading-[1.2] text-forest sm:mt-[9px] sm:text-[22px] sm:leading-[1.15]">{p.name}</h3>
+                <p className="mt-1 hidden text-[12.5px] font-light leading-[1.45] text-[#8A7C68] sm:mt-[7px] sm:block sm:min-h-[38px]">{p.desc}</p>
+                <div className="mt-2 flex items-center justify-between border-t pt-2 sm:mt-[14px] sm:pt-[14px]" style={{ borderColor: "#EFE8D8" }}>
+                    <span className="font-display text-[15px] font-semibold text-forest sm:text-[23px]">{money(p.price)}</span>
                     {out ? (
-                        <button type="button" disabled className="cursor-not-allowed rounded-[25px] px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.12em]" style={{ background: "#EFE8D8", color: "#A99C86" }}>Sold Out</button>
+                        <button type="button" disabled className="cursor-not-allowed rounded-[25px] px-2.5 py-1.5 text-[8.5px] font-semibold uppercase tracking-[0.1em] sm:px-5 sm:py-2.5 sm:text-[10.5px] sm:tracking-[0.12em]" style={{ background: "#EFE8D8", color: "#A99C86" }}>Sold Out</button>
                     ) : (
-                        <button type="button" onClick={onAdd} className="rounded-[25px] bg-forest px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-[#2b4d38]">Add</button>
+                        <button type="button" onClick={onAdd} className="rounded-[25px] bg-forest px-2.5 py-1.5 text-[8.5px] font-semibold uppercase tracking-[0.1em] text-cream transition-colors hover:bg-[#2b4d38] sm:px-5 sm:py-2.5 sm:text-[10.5px] sm:tracking-[0.12em]">Add</button>
                     )}
                 </div>
             </div>
@@ -249,30 +249,32 @@ function ProductRow({ p, wished, beat, onWish, onQuick, onAdd }: { p: Product; w
     const sm = stockMeta[p.stock];
     const out = p.stock === "out";
     return (
-        <div className="group flex overflow-hidden bg-white transition-[box-shadow,border-color] duration-[450ms] hover:shadow-[0_30px_56px_-34px_rgba(31,58,42,.55)]" style={{ border: "1px solid #EFE8D8" }}>
-            <div className="relative w-[210px] flex-none overflow-hidden">
+        <div className="group flex flex-col overflow-hidden bg-white transition-[box-shadow,border-color] duration-[450ms] hover:shadow-[0_30px_56px_-34px_rgba(31,58,42,.55)] sm:flex-row" style={{ border: "1px solid #EFE8D8" }}>
+            <div className="relative h-[180px] w-full flex-none overflow-hidden sm:h-auto sm:w-[210px]">
                 <ImageSlot alt={p.name} label={`Photo · ${p.name}`} />
             </div>
-            <div className="flex flex-1 flex-col justify-center px-[26px] py-6">
+            <div className="flex flex-1 flex-col justify-center px-4 py-4 sm:px-[26px] sm:py-6">
                 <div className="flex items-center gap-3 text-[10.5px] font-semibold uppercase tracking-[0.2em]">
                     <span className="text-gold">{p.cat}</span>
                     <span style={{ color: sm.color }}>· {sm.label}</span>
                 </div>
-                <h3 className="mt-2 font-display text-[26px] font-semibold text-forest">{p.name}</h3>
+                <h3 className="mt-2 font-display text-[20px] font-semibold text-forest sm:text-[26px]">{p.name}</h3>
                 <p className="mt-2 max-w-[520px] text-[13.5px] font-light leading-[1.6] text-[#5F5648]">{p.long}</p>
             </div>
-            <div className="flex w-[190px] flex-none flex-col items-end justify-center gap-3 px-6">
-                <span className="font-display text-[28px] font-semibold text-forest">{money(p.price)}</span>
-                {out ? (
-                    <button type="button" disabled className="w-full cursor-not-allowed rounded-[25px] py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.12em]" style={{ background: "#EFE8D8", color: "#A99C86" }}>Sold Out</button>
-                ) : (
-                    <button type="button" onClick={onAdd} className="w-full rounded-[25px] bg-forest py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-[#2b4d38]">Add to Cart</button>
-                )}
-                <div className="flex items-center gap-2">
-                    <button type="button" onClick={onQuick} className="rounded-[25px] border px-3 py-2 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-forest" style={{ borderColor: HAIR }}>Quick view</button>
-                    <button type="button" onClick={onWish} aria-label="Save" className="flex h-[34px] w-[34px] items-center justify-center rounded-full border" style={{ borderColor: HAIR }}>
-                        <Heart filled={wished} beat={beat} />
-                    </button>
+            <div className="flex w-full flex-none flex-row items-center justify-between gap-3 px-4 pb-4 sm:w-[190px] sm:flex-col sm:items-end sm:justify-center sm:px-6 sm:pb-0">
+                <span className="font-display text-[22px] font-semibold text-forest sm:text-[28px]">{money(p.price)}</span>
+                <div className="flex flex-1 items-center gap-2 sm:w-full sm:flex-none sm:flex-col-reverse">
+                    {out ? (
+                        <button type="button" disabled className="flex-1 cursor-not-allowed rounded-[25px] py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] sm:w-full" style={{ background: "#EFE8D8", color: "#A99C86" }}>Sold Out</button>
+                    ) : (
+                        <button type="button" onClick={onAdd} className="flex-1 rounded-[25px] bg-forest py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-[#2b4d38] sm:w-full">Add to Cart</button>
+                    )}
+                    <div className="flex items-center gap-2">
+                        <button type="button" onClick={onQuick} className="rounded-[25px] border px-3 py-2 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-forest" style={{ borderColor: HAIR }}>Quick view</button>
+                        <button type="button" onClick={onWish} aria-label="Save" className="flex h-[34px] w-[34px] items-center justify-center rounded-full border" style={{ borderColor: HAIR }}>
+                            <Heart filled={wished} beat={beat} />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
