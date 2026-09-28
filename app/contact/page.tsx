@@ -1,15 +1,17 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import SiteHeader from "@/components/site-header";
 import Footer from "@/components/footer";
 import Reveal from "@/components/reveal";
 import ContactForm from "@/components/contact-form";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
     title: "Contact — Ceylon Spicera",
     description:
         "Get in touch with the Ceylon Spicera export team in Colombo for orders, wholesale, private label, and trade visits.",
-};
+    path: "/contact",
+    image: "/contact/plantation.jpg",
+});
 
 /* Page-head background photo (plantation.jpg). */
 const HERO_IMG = "/contact/plantation.jpg";

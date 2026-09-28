@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import SiteHeader from "@/components/site-header";
 import Footer from "@/components/footer";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
     title: "About Ceylon — Ceylon Spicera",
     description:
         "Grown, cured and priced on the island. The story, estates, families, and promise behind Ceylon Spicera.",
-};
+    path: "/about-ceylon",
+    image: "/about/slide-2.jpg",
+});
 
 /* ---- Photos (drop files in public/about/) — null shows a fallback ---- */
 const HERO_IMG: string | null = "/about/slide-2.jpg";

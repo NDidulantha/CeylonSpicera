@@ -33,11 +33,72 @@ const manrope = localFont({
   ],
 });
 
+const SITE_URL = "https://www.ceylonspicera.com";
+const SITE_NAME = "Ceylon Spicera";
+const SITE_DESCRIPTION =
+  "Hand-selected Ceylon spices sourced directly from Sri Lanka's highland estates and delivered worldwide with uncompromising quality.";
+const DEFAULT_OG_IMAGE = "/hero/plantation.jpg";
+
 export const metadata: Metadata = {
-  title: "Ceylon Spicera — Premium Sri Lankan Spices, Exported Worldwide",
-  description:
-    "Hand-selected Ceylon spices sourced directly from Sri Lanka's highland estates and delivered worldwide with uncompromising quality.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Ceylon Spicera — Premium Sri Lankan Spices, Exported Worldwide",
+    template: "%s",
+  },
+  description: SITE_DESCRIPTION,
   icons: { icon: "/logo/CS.png" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: "Ceylon Spicera — Premium Sri Lankan Spices, Exported Worldwide",
+    description: SITE_DESCRIPTION,
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 800, alt: SITE_NAME }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ceylon Spicera — Premium Sri Lankan Spices, Exported Worldwide",
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/logo/CS.png`,
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+94-72-025-4466",
+        email: "Ceylonspicera@gmail.com",
+        contactType: "customer service",
+      },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Colombo",
+        addressRegion: "Cinnamon Gardens",
+        addressCountry: "LK",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      publisher: { "@id": `${SITE_URL}/#organization` },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE_URL}/shop?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -48,6 +109,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cormorant.variable} ${manrope.variable}`}>
       <body>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <AuthProvider>
         <CatalogProvider>
         <StoreProvider>
@@ -64,6 +129,4 @@ export default function RootLayout({
     </html>
   );
 }
-
-// …inside the provider:
 
