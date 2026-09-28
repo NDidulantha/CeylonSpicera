@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/components/auth-context";
@@ -14,34 +14,9 @@ const MUTED = "#8A7C68";
 const FAINT = "#A2977F";
 const HAIR = "#D8C8AE";
 const TERRA = "#8A5B33";
-const GOLD = "#C59A3D";
 const GREEN = "#3F7A55";
 
 const ACCOUNT_BG: string | null = "/account/plantation.jpg";
-
-
-/* password policy checks */
-function pwRules(pw: string, name: string, email: string) {
-    const lower = pw.toLowerCase();
-    const seqs = ["123", "234", "345", "456", "567", "678", "789", "012", "qwe", "wer", "ert", "rty", "asd", "sdf", "abc", "bcd", "cde"];
-    const hasSeq = seqs.some((s) => lower.includes(s));
-    const hasRepeat = /(.)\1\1/.test(pw);
-    const deny = ["password", "letmein", "welcome", "ceylon", "spicera", "admin", "qwerty", "111111", "123456", "iloveyou"];
-    const local = (email.split("@")[0] || "").toLowerCase();
-    const first = name.trim().toLowerCase().split(" ")[0] || "";
-    const known =
-        deny.some((d) => lower.includes(d)) ||
-        (first.length >= 3 && lower.includes(first)) ||
-        (local.length >= 3 && lower.includes(local));
-    return [
-        { k: "12 characters or more", ok: pw.length >= 12 },
-        { k: "Upper and lower case", ok: /[a-z]/.test(pw) && /[A-Z]/.test(pw) },
-        { k: "A number", ok: /[0-9]/.test(pw) },
-        { k: "A symbol", ok: /[^A-Za-z0-9]/.test(pw) },
-        { k: "No repeated runs", ok: pw.length > 0 && !hasRepeat && !hasSeq },
-        { k: "Not a known phrase", ok: pw.length > 0 && !known },
-    ];
-}
 
 /* ---- ruled field ---- */
 function Row({ label, trailing, children }: { label: string; trailing?: React.ReactNode; children: React.ReactNode }) {
@@ -88,14 +63,8 @@ export default function AccountView() {
 
     const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value });
 
-    const rules = useMemo(() => pwRules(f.pw, f.name, f.email), [f.pw, f.name, f.email]);
-    const pwOk = rules.every((r) => r.ok);
-    const met = rules.filter((r) => r.ok).length;
-    const segColor = met >= 6 ? GREEN : met >= 5 ? GOLD : met >= 3 ? "#B07A2A" : TERRA;
-    const segFilled = met >= 6 ? 4 : met >= 5 ? 3 : met >= 3 ? 2 : met >= 1 ? 1 : 0;
-
     const loginValid = f.email.trim() !== "" && f.pw !== "";
-    const regValid = f.name.trim() !== "" && f.email.trim() !== "" && pwOk && f.pw === f.confirm && f.terms;
+    const regValid = f.name.trim() !== "" && f.email.trim() !== "" && f.pw !== "" && f.pw === f.confirm && f.terms;
     const valid = mode === "register" ? regValid : loginValid;
 
     const goBack = () => router.push(returnTo);
@@ -197,33 +166,13 @@ export default function AccountView() {
                         )}
 
                         <Row label="Pass Phrase" trailing={<button type="button" onClick={() => setReveal((r) => !r)} className="font-mono text-[9px] uppercase tracking-[0.16em] transition-colors" style={{ color: MUTED }}>{reveal ? "Hide" : "Show"}</button>}>
-                            <input className={inputCls} style={{ color: INK }} type={reveal ? "text" : "password"} value={f.pw} onChange={set("pw")} autoComplete={mode === "register" ? "new-password" : "current-password"} spellCheck={false} placeholder={mode === "register" ? "Twelve characters or more" : "Your pass phrase"} />
+                            <input className={inputCls} style={{ color: INK }} type={reveal ? "text" : "password"} value={f.pw} onChange={set("pw")} autoComplete={mode === "register" ? "new-password" : "current-password"} spellCheck={false} placeholder={mode === "register" ? "Choose a pass phrase" : "Your pass phrase"} />
                         </Row>
 
                         {mode === "register" && (
-                            <>
-                                {/* strength + checklist */}
-                                <div className="grid grid-cols-[110px_1fr] gap-4 border-b py-4 sm:grid-cols-[150px_1fr]" style={{ borderColor: HAIR }}>
-                                    <label className="font-mono text-[9.5px] uppercase tracking-[0.22em]" style={{ color: MUTED }}>Phrase Strength</label>
-                                    <div>
-                                        <div className="flex gap-1.5">
-                                            {[0, 1, 2, 3].map((i) => (<span key={i} className="h-[3px] flex-1 rounded-full transition-colors duration-500" style={{ background: i < segFilled ? segColor : "#E3D8C0" }} />))}
-                                        </div>
-                                        <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1.5">
-                                            {rules.map((r) => (
-                                                <div key={r.k} className="flex items-center gap-2 font-sans text-[11.5px] font-light transition-colors" style={{ color: r.ok ? GREEN : FAINT }}>
-                                                    <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: r.ok ? GREEN : FAINT }} />
-                                                    {r.k}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Row label="Repeat Phrase">
-                                    <input className={inputCls} style={{ color: INK }} type={reveal ? "text" : "password"} value={f.confirm} onChange={set("confirm")} autoComplete="new-password" spellCheck={false} placeholder="Once more" />
-                                </Row>
-                            </>
+                            <Row label="Repeat Phrase">
+                                <input className={inputCls} style={{ color: INK }} type={reveal ? "text" : "password"} value={f.confirm} onChange={set("confirm")} autoComplete="new-password" spellCheck={false} placeholder="Once more" />
+                            </Row>
                         )}
                     </div>
 
