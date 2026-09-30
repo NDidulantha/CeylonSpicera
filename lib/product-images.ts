@@ -15,4 +15,5 @@ export const PRODUCT_IMAGES: Record<string, { image: string; gallery?: string[] 
     "nutmeg-mace": { image: "/shop/nutmeg-mace.jpg" },
     "ceylon-turmeric": { image: "/shop/ceylon-turmeric.jpg" },
     "curry-leaf-estate-dried": { image: "/shop/curry-leaf-estate-dried.jpg" },
+    "ceylon-ginger": { image: "/shop/ceylon-ginger.jpg" },
 };
