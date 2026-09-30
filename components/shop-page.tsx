@@ -70,10 +70,10 @@ export default function ShopPage() {
         <div className="bg-cream">
             {/* Hero */}
             <section
-                className="relative overflow-hidden px-6 py-[76px] text-cream lg:px-11"
+                className="relative overflow-hidden px-6 py-[92px] text-cream lg:px-11"
                 style={{
                     backgroundImage:
-                        "linear-gradient(90deg,rgba(18,30,20,.94),rgba(18,30,20,.72) 58%,rgba(18,30,20,.5)), url('/shop/hero.jpg')",
+                        "linear-gradient(90deg,rgba(18,30,20,.94),rgba(18,30,20,.72) 58%,rgba(18,30,20,.5)), url('/shop/shop-hero.jpg')",
                     backgroundSize: "cover",
                     backgroundPosition: "center 60%",
                 }}
