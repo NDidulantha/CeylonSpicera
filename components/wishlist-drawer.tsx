@@ -55,7 +55,7 @@ export default function WishlistDrawer() {
                             return (
                                 <div key={p.id} className="flex gap-4 border-b py-5" style={{ borderColor: "#EFE8D8" }}>
                                     <div className="relative h-[74px] w-[74px] flex-none overflow-hidden">
-                                        <ImageSlot alt={p.name} label={p.name} />
+                                        <ImageSlot src={p.image} alt={p.name} label={p.name} />
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-start justify-between gap-2">

@@ -76,7 +76,7 @@ export default function CartDrawer() {
                             {lines.map((l) => (
                                 <div key={l.key} className="flex gap-4 border-b py-5" style={{ borderColor: "#EFE8D8" }}>
                                     <div className="relative h-[74px] w-[74px] flex-none overflow-hidden">
-                                        <ImageSlot alt={l.p.name} label={l.p.name} />
+                                        <ImageSlot src={l.p.image} alt={l.p.name} label={l.p.name} />
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-start justify-between gap-2">

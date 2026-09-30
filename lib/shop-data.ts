@@ -19,6 +19,8 @@ export type Product = {
     desc: string;
     long: string;
     sizes: ProductSize[];
+    image?: string;
+    gallery?: string[];
 };
 
 export type Size = { key: string; label: string; mult: number };

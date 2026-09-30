@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { apiGet } from "@/lib/api";
 import type { Product, Stock } from "@/lib/shop-data";
+import { PRODUCT_IMAGES } from "@/lib/product-images";
 
 type Category = { name: string; count: number };
 
@@ -26,6 +27,7 @@ type RawProduct = {
 };
 
 function mapProduct(raw: RawProduct): Product {
+    const photos = PRODUCT_IMAGES[raw.slug];
     return {
         id: String(raw.id),
         numericId: raw.id,
@@ -43,6 +45,8 @@ function mapProduct(raw: RawProduct): Product {
         desc: raw.short_description ?? "",
         long: raw.long_description ?? "",
         sizes: (raw.sizes ?? []).map((s) => ({ id: s.id, key: s.size_key, label: s.label, price: s.price_cents / 100 })),
+        image: photos?.image,
+        gallery: photos?.gallery,
     };
 }
 

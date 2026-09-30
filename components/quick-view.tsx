@@ -37,6 +37,7 @@ function QuickViewModal({ id }: { id: string }) {
     const sm = stockMeta[p.stock];
     const out = p.stock === "out";
     const total = sizePrice(p, size) * qty;
+    const images = p.gallery?.length ? p.gallery : p.image ? [p.image] : [];
 
     return (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" onClick={closeQuick} style={{ background: "rgba(14,22,15,.62)", backdropFilter: "blur(7px)", animation: "csFade .3s ease" }}>
@@ -51,15 +52,17 @@ function QuickViewModal({ id }: { id: string }) {
 
                 <div className="p-[26px]" style={{ background: "#EFE8D8" }}>
                     <div className="relative h-[340px] overflow-hidden" style={{ background: "#E5DAC4" }}>
-                        <ImageSlot alt={p.name} label={`${p.name} · view ${thumb + 1}`} />
+                        <ImageSlot src={images[thumb] ?? images[0]} alt={p.name} label={`${p.name} · view ${thumb + 1}`} />
                     </div>
-                    <div className="mt-2.5 grid grid-cols-3 gap-2.5">
-                        {[0, 1, 2].map((i) => (
-                            <button key={i} type="button" onClick={() => setThumb(i)} className="relative h-[76px] overflow-hidden" style={{ background: "#E5DAC4", border: `1px solid ${i === thumb ? "#C59A3D" : "transparent"}`, opacity: i === thumb ? 1 : 0.72 }}>
-                                <ImageSlot alt={`${p.name} thumbnail ${i + 1}`} label={`#${i + 1}`} />
-                            </button>
-                        ))}
-                    </div>
+                    {images.length > 1 && (
+                        <div className="mt-2.5 grid grid-cols-3 gap-2.5">
+                            {images.map((src, i) => (
+                                <button key={src} type="button" onClick={() => setThumb(i)} className="relative h-[76px] overflow-hidden" style={{ background: "#E5DAC4", border: `1px solid ${i === thumb ? "#C59A3D" : "transparent"}`, opacity: i === thumb ? 1 : 0.72 }}>
+                                    <ImageSlot src={src} alt={`${p.name} thumbnail ${i + 1}`} label={`#${i + 1}`} />
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className="px-10 py-10 lg:pr-11">

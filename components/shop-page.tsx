@@ -236,7 +236,7 @@ function ProductCard({ p, wished, beat, onWish, onQuick, onAdd }: { p: Product; 
         <div className="group relative flex flex-col bg-white transition-[translate,box-shadow,border-color] duration-[450ms] ease-[cubic-bezier(.16,.84,.34,1)] hover:-translate-y-1.5 hover:shadow-[0_30px_56px_-34px_rgba(31,58,42,.55)]" style={{ border: "1px solid #EFE8D8" }}>
             <div className="relative h-[150px] overflow-hidden sm:h-[190px] lg:h-[236px]" role="button" tabIndex={0} onClick={onQuick} onKeyDown={(e) => e.key === "Enter" && onQuick()} aria-label={`Quick view ${p.name}`}>
                 <div className="absolute inset-0 transition-[scale] duration-[900ms] ease-[cubic-bezier(.16,.84,.34,1)] group-hover:scale-[1.07]">
-                    <ImageSlot alt={p.name} label={`Photo · ${p.name}`} />
+                    <ImageSlot src={p.image} alt={p.name} label={`Photo · ${p.name}`} />
                 </div>
                 {p.badge && (<span className="absolute left-2 top-2 rounded-[25px] bg-forest px-2 py-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-cream sm:left-[14px] sm:top-[14px] sm:px-3 sm:py-1 sm:text-[9.5px] sm:tracking-[0.16em]">{p.badge}</span>)}
                 <button type="button" onClick={(e) => { e.stopPropagation(); onWish(); }} aria-label="Save" className="absolute right-2 top-2 flex h-[26px] w-[26px] items-center justify-center rounded-full border sm:right-3 sm:top-3 sm:h-[34px] sm:w-[34px]" style={{ background: "rgba(247,243,234,.9)", borderColor: HAIR }}>
@@ -272,7 +272,7 @@ function ProductRow({ p, wished, beat, onWish, onQuick, onAdd }: { p: Product; w
     return (
         <div className="group flex flex-col overflow-hidden bg-white transition-[box-shadow,border-color] duration-[450ms] hover:shadow-[0_30px_56px_-34px_rgba(31,58,42,.55)] sm:flex-row" style={{ border: "1px solid #EFE8D8" }}>
             <div className="relative h-[180px] w-full flex-none overflow-hidden sm:h-auto sm:w-[210px]">
-                <ImageSlot alt={p.name} label={`Photo · ${p.name}`} />
+                <ImageSlot src={p.image} alt={p.name} label={`Photo · ${p.name}`} />
             </div>
             <div className="flex flex-1 flex-col justify-center px-4 py-4 sm:px-[26px] sm:py-6">
                 <div className="flex items-center gap-3 text-[10.5px] font-semibold uppercase tracking-[0.2em]">
